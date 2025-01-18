@@ -6,8 +6,7 @@ services:
     hostname: gitlab.local
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://localhost'
-        gitlab_rails['initial_root_password'] = "admin123"
+        external_url 'http://gitlab'
     ports:
       - "8929:80" # Para HTTP
       - "4433:443" # Para HTTPS
@@ -16,8 +15,28 @@ services:
       - gitlab_config:/etc/gitlab
       - gitlab_logs:/var/log/gitlab
       - gitlab_data:/var/opt/gitlab
+    networks:
+      - gitlab-network
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - gitlab_runner_config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock  # Permite que el runner ejecute contenedores
+    networks:
+      - gitlab-network
+    extra_hosts:
+      - "gitlab:gitlab"
 
 volumes:
   gitlab_config:
   gitlab_logs:
   gitlab_data:
+  gitlab_runner_config:
+
+networks:
+  gitlab-network:

@@ -1,5 +1,69 @@
 # Gitlab CE
 
+## Modo de implementación:
+
+### 1. Levantar contenedor
+
+```bash
+docker-compose up -d
+```
+
+### 2. Ingresar a http://localhost:8929 y esperar que esté listo (lleva a la pantalla de login)
+
+### 3. Conseguir contraseña del usuario root
+
+```bash
+docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
+```
+
+### 4. Iniciar sesión
+
+Usuario: root
+Contraseña: La conseguida en el punto 3
+
+## Configuración del primer runner
+
+### 1. Crear runner en gitlab
+
+- Ir a http://localhost:8929/admin/runners -> Click en el botón ```New instance runner```
+- Llenar con la configuración deseada
+
+### 2. Registrar runner
+
+- Siguiendo la guía que nos da en la misma página, hay que entrar en el contenedor del gitlab-runner y ejecutar
+
+```bash
+gitlab-runner register  --url http://gitlab  --token <token>
+```
+
+- **Ingresar URL de gitlab:** Se puede dejar vacío porque toma por defecto la escrita en el comando
+- **Ingresar nombre del runner:** Elegir un nombre representativo, no es importante para la funcionalidad
+- **Ingresar executor:** Se elige sobre una lista, ```Docker``` para mayor compatibilidad y simplicidad
+- **Ingresar imagen de Docker por defecto:**
+| Tecnología | Imagen recomendada |
+|--|--|
+| **Python** | `python:3.11` |
+| **Node.js** | `node:20` |
+| **Java** | `openjdk:17` |
+| **Go** | `golang:1.21` |
+| **PHP** | `php:8.2` |
+| **Ruby** | `ruby:3.2` |
+| **.NET** | `mcr.microsoft.com/dotnet/sdk:8.0` |
+| **Docker dentro de Docker** | `docker:latest` |
+| **CI/CD genérico** | `alpine:latest` (liviano) o `ubuntu:latest` (más completo) |
+
+**Tener en cuenta que las versiones tienen que ser la misma o compatible con la utilizada en el proyecto**
+
+### 3. Configurar network del runner
+
+**Problema:** Al elegir tipo "Docker", cuando se corre un job, se va a crear un contenedor nuevo por lo que queda sin acceso a la red global.
+**Solución:** Hay que configurar el ```.toml``` del runner para que los cree con la red global del stack.
+
+Para lograr la solución se agrega la siguiente propiedad debajo de la clausula ```[runners.docker]```
+```bash
+network_mode = "gitlab_new_gitlab-network"
+```
+
 ## Modificaciones:
 
 ### 1. Uso de volumenes
