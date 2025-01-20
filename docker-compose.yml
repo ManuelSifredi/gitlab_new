@@ -1,23 +1,25 @@
 services:
+
   gitlab:
-    image: gitlab/gitlab-ee:17.6.3-ee.0  # Versión Community Edition (CE)
+    # image: gitlab/gitlab-ce:17.8.0-ce.0  # Versión Community Edition (CE)
+    image: gitlab/gitlab-ee:17.8.0-ee.0  # Versión Enterprise Edition (EE)
     container_name: gitlab
     restart: always
+    hostname: gitlab.local
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab'
     ports:
-      - "8929:80" # Para HTTP
-      - "4433:443" # Para HTTPS
-      - "2224:22"  # Para SSH 
+      - "8888:80" # Para HTTP
+      - "4444:443" # Para HTTPS
+      - "2222:22"  # Para SSH 
     volumes:
       - gitlab_config:/etc/gitlab
       - gitlab_logs:/var/log/gitlab
       - gitlab_data:/var/opt/gitlab
+    shm_size: 1GB
     networks:
       - gitlab-network
-    depends_on:
-      - license_generator
 
   gitlab-runner:
     image: gitlab/gitlab-runner:v17.8.1

@@ -1,0 +1,12 @@
+  gitlab-license-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gitlab-license-generator
+    env_file:
+      - .env
+    volumes:
+      - ./license:/app/build
+    stdin_open: true
+    tty: true
+    restart: on-failure
