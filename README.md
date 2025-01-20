@@ -64,6 +64,32 @@ Para lograr la solución se agrega la siguiente propiedad debajo de la clausula 
 network_mode = "gitlab_new_gitlab-network"
 ```
 
+## (Opcional) Configuraciones para reducir el consumo de RAM
+
+- Ir al archivo ```/etc/gitlab/gitlab.rb```
+
+### 1. Reducir la cantidad de procesos de ```puma```
+- Modificar y descomentar todas las lineas relacionadas con ```puma``` de la primer sección para que queden así
+```ruby
+puma['enable'] = true # Puma es el servidor HTTP. Al dejar en true se usa puma en vez de unicorn para que sea más liviano
+puma['ha'] = false # High Availability para balanceo de carga
+puma['worker_timeout'] = 30 # Si un worker no responde en x segundos, Puma lo reinicia
+puma['worker_processes'] = 2 # Numero de procesos de Puma (workers). Se podría bajar a 1 si hay menos de 10 usuarios recurrentes
+puma['min_threads'] = 1 # Numero mínimo de threads por worker. Se puede dejar en 1 mientras se tenga menos de 20 usuarios recurrentes
+puma['max_threads'] = 4 # Numero máximo de threads por worker. Pequeña = 2, Media = 4, Grande = 8
+```
+
+### 2. Reducir la cantidad de procesos de ```sidekiq```
+- Modificar y descomentar todas las lineas relacionadas con ```sidekiq``` de la primer sección para que queden así
+```ruby
+sidekiq['enable'] = true # Habilita sidekiq. Tiene que estar habilitado para que Gitlab esté totalmente funcional
+# sidekiq['log_directory'] = "/var/log/gitlab/sidekiq" # Directorio donde se guardan los logs de Sidekiq, queda comentado porque no lo queremos modificar
+sidekiq['log_format'] = "json" # Formato de logs. Queda en json aunque sean más pesado que "plain" para tener mejores logs
+sidekiq['shutdown_timeout'] = 4 # Tiempo que espera Sidekiq antes de forzar cierre de procesos. 4 es un valor relativamente bajo y ahorra recursos
+# sidekiq['interval'] = nil # Intervalo de chequeo de tareas. nil es el valor por defecto. Queda así para no forzar chequeos más frecuentes
+sidekiq['concurrency'] = 10 # Numero de threads simultáneos en Sidekiq. Pequeña = 5, Media = 10, Grande = 20
+```
+
 ## Modificaciones:
 
 ### 1. Uso de volumenes
