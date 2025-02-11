@@ -40,17 +40,18 @@ gitlab-runner register  --url http://gitlab  --token <token>
 - **Ingresar nombre del runner:** Elegir un nombre representativo, no es importante para la funcionalidad
 - **Ingresar executor:** Se elige sobre una lista, ```Docker``` para mayor compatibilidad y simplicidad
 - **Ingresar imagen de Docker por defecto:**
-| Tecnología | Imagen recomendada |
-|--|--|
-| **Python** | `python:3.11` |
-| **Node.js** | `node:20` |
-| **Java** | `openjdk:17` |
-| **Go** | `golang:1.21` |
-| **PHP** | `php:8.2` |
-| **Ruby** | `ruby:3.2` |
-| **.NET** | `mcr.microsoft.com/dotnet/sdk:8.0` |
-| **Docker dentro de Docker** | `docker:latest` |
-| **CI/CD genérico** | `alpine:latest` (liviano) o `ubuntu:latest` (más completo) |
+
+    | Tecnología | Imagen recomendada |
+    |--|--|
+    | **Python** | `python:3.11` |
+    | **Node.js** | `node:20` |
+    | **Java** | `openjdk:17` |
+    | **Go** | `golang:1.21` |
+    | **PHP** | `php:8.2` |
+    | **Ruby** | `ruby:3.2` |
+    | **.NET** | `mcr.microsoft.com/dotnet/sdk:8.0` |
+    | **Docker dentro de Docker** | `docker:latest` |
+    | **CI/CD genérico** | `alpine:latest` (liviano) o `ubuntu:latest` (más completo) |
 
 **Tener en cuenta que las versiones tienen que ser la misma o compatible con la utilizada en el proyecto**
 
